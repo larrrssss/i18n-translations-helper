@@ -36,7 +36,9 @@ export default class I18nProvider {
       this.locale = 'en';
   }
 
-  $t(key: string, payload?: Record<string, string>) {
+  public $t(key: string, payload?: Record<string, string>) {
+    console.log(this);
+    
     let variable = this._reduceKeyToVariable(key, this.locale) ?? this._reduceKeyToVariable(key, 'en') ?? key;
 
     for (const match of variable.match(/(?<=\{).+?(?=\})/) ?? []) {
