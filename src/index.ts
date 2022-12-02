@@ -37,11 +37,7 @@ export default class I18nProvider {
   }
 
   $t(key: string, payload?: Record<string, string>) {
-    const snippets = key.split('.');
-
-    let variable =  snippets.reduce<string | null>((p, c) => p && typeof p === 'object' ? p[c] : null, this.i18n[this.locale] as any)
-      ?? snippets.reduce<string | null>((p, c) => p && typeof p === 'object' ? p[c] : null, this.i18n.en as any)
-      ?? key;
+    let variable = this._reduceKeyToVariable(key, this.locale) ?? this._reduceKeyToVariable(key, 'en') ?? key;
 
     for (const match of variable.match(/(?<=\{).+?(?=\})/) ?? []) {
       if (!payload || !payload[match]) continue;
@@ -50,5 +46,14 @@ export default class I18nProvider {
     }
 
     return variable;
+  }
+
+  private _reduceKeyToVariable(key: string, locale = this.locale) {
+    const snippets = key.split('.');
+    return snippets.reduce<string | null>(function (p, c) {
+      return p && typeof p === 'object'
+        ? p[c]
+        : null;
+    }, this.i18n[locale] as any);
   }
 }
