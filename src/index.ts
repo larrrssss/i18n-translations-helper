@@ -25,9 +25,12 @@ export default class I18nProvider {
   i18n: I18n;
   locale: string;
 
-  constructor(locale: string, data: I18n) {
-    this.i18n = data;
+  constructor(locale: string, data?: I18n) {
+    this.i18n = data ?? cache;
     this.locale = locale;
+
+    if (!this.i18n)
+      throw new Error('Missing translation data. Use loadTranslations().');
 
     if (!this.i18n[this.locale])
       this.locale = 'en';
