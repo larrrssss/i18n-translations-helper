@@ -36,7 +36,7 @@ export default class I18nProvider {
       this.locale = 'en';
   }
 
-  $t(key: string, payload: any) {
+  $t(key: string, payload?: Record<string, string>) {
     const snippets = key.split('.');
 
     let variable =  snippets.reduce<string | null>((p, c) => p && typeof p === 'object' ? p[c] : null, this.i18n[this.locale] as any)
@@ -44,7 +44,7 @@ export default class I18nProvider {
       ?? key;
 
     for (const match of variable.match(/(?<=\{).+?(?=\})/) ?? []) {
-      if (!payload[match]) continue;
+      if (!payload || !payload[match]) continue;
 
       variable = variable.split(`{${match}}`).join(payload[match]);
     }
