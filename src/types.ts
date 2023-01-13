@@ -9,3 +9,8 @@ export type Options = {
   branch?: string,
   personalAccessToken?: string,
 }
+
+export type I18nProviderOptions = {
+  data?: I18n,
+  fallbackLanguage?: string,
+}
