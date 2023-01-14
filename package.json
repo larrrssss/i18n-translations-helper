@@ -1,6 +1,6 @@
 {
   "name": "i18n-translations-helper",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Helper module to load translation files from GitHub",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
