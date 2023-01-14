@@ -50,6 +50,14 @@ export default class I18nProvider {
     return variable;
   }
 
+  public override(locale: string, options?: I18nProviderOptions) {
+    const provider = new I18nProvider(locale, {
+      data: this.i18n,
+      ...(options ?? {}),
+    });
+    return provider;
+  }
+
   private reduceKeyToVariable(key: string, locale = this.locale) {
     const snippets = key.split('.');
     return snippets.reduce<string | null>((p, c) => {
