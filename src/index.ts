@@ -38,13 +38,13 @@ export default class I18nProvider {
       this.locale = 'en';
   }
 
-  public t(key: string, ...payload: string[]) {    
+  public t(key: string, ...payload: (string | null | undefined)[]) {    
     let variable = this.reduceKeyToVariable(key, this.locale) 
       ?? this.reduceKeyToVariable(key, this.options?.fallbackLanguage ?? 'en') 
       ?? key;
 
     for (let i = 0; i < payload.length; i += 1) {
-      variable = variable.split(`{${i}}`).join(payload[i]);
+      variable = variable.split(`{${i}}`).join(payload[i] ?? '');
     }
 
     return variable;
