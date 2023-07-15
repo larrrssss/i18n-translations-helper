@@ -1,30 +1,39 @@
 import axios from 'axios';
 
-import { I18n, Options, TranslationFile } from './types';
+import { GithubFetchOptions, I18n, TranslationFile } from './types';
+import { removePaddedSlashes } from './utils';
 
 const baseUrl = 'https://api.github.com';
 
-async function getGithubTranslationFile(locale: string, {
-  repository,
-  personalAccessToken,
-  branch = 'master',
-}: Options): Promise<TranslationFile> {
+async function getGithubTranslationFile(
+  locale: string,
+  options: GithubFetchOptions,
+): Promise<TranslationFile> {
+  const {
+    repository,
+    personalAccessToken,
+    branch = 'master',
+    root = '',
+    outputFilePath = 'output.json',
+  } = options;
+
   const qs = new URLSearchParams({
     ref: branch,
   });
 
+  const url = `${baseUrl}/repos/${repository}/contents/${removePaddedSlashes(
+    root,
+  )}/${locale}/${removePaddedSlashes(outputFilePath)}`;
+
   try {
-    const { data: content } = await axios.get(
-      `${baseUrl}/repos/${repository}/contents/${locale}/output.json?${qs}`,
-      {
-        headers: {
-          Accept: 'application/vnd.github.raw',
-          Authorization: personalAccessToken
-            ? `token ${personalAccessToken}`
-            : undefined,
-        },
+    const { data: content } = await axios.get(`${url}?${qs}`, {
+      headers: {
+        Accept: 'application/vnd.github.raw',
+        Authorization: personalAccessToken
+          ? `token ${personalAccessToken}`
+          : undefined,
       },
-    );
+    });
 
     return content;
   } catch (e) {
@@ -32,15 +41,25 @@ async function getGithubTranslationFile(locale: string, {
   }
 }
 
-export async function getGithubTranslations(options: Options) {
-  const { repository, branch = 'master', personalAccessToken } = options;
+export async function getGithubTranslations(options: GithubFetchOptions) {
+  const {
+    repository,
+    branch = 'master',
+    personalAccessToken,
+    root = '',
+    localesFilePath = 'locales.json',
+  } = options;
 
   const qs = new URLSearchParams({
     ref: branch,
   });
 
+  const url = `${baseUrl}/repos/${repository}/contents/${removePaddedSlashes(
+    root,
+  )}/${removePaddedSlashes(localesFilePath)}`;
+
   try {
-    const { data: locales } = await axios.get(`${baseUrl}/repos/${repository}/contents/locales.json?${qs}`, {
+    const { data: locales } = await axios.get(`${url}?${qs}`, {
       headers: {
         Accept: 'application/vnd.github.raw',
         Authorization: personalAccessToken
@@ -58,7 +77,7 @@ export async function getGithubTranslations(options: Options) {
     }
 
     return translations;
-  } catch (e) {    
+  } catch (e) {
     throw new Error(`Error fetching github translation files: ${e}`);
   }
 }
