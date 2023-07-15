@@ -55,7 +55,7 @@ export async function loadLocalRessource(
         await readPathOrThrow(join(ressourcePath, root, l, outputFilePath)),
       );
 
-      mergedData = Object.assign(mergedData, data);
+      mergedData = Object.assign(mergedData, { [l]: data });
     }
 
     cache = mergedData;
