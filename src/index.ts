@@ -11,7 +11,7 @@ import { readPathOrThrow } from './utils';
 
 let cache: I18n;
 
-export async function loadTranslations(
+export async function loadGithubTranslations(
   options: GithubFetchOptions,
   forceFetch = false,
 ): Promise<I18n> {
@@ -33,6 +33,39 @@ export async function loadTranslations(
   }
 }
 
+export async function loadLocalRessource(
+  ressourcePath: string,
+  options?: I18nRessourceOptions,
+): Promise<I18n> {
+  const {
+    root = '/',
+    localesFilePath = 'locales.json',
+    outputFilePath = 'output.json',
+  } = options ?? {};
+
+  try {
+    let mergedData = {};
+
+    const locales: string[] = JSON.parse(
+      await readPathOrThrow(join(ressourcePath, root, localesFilePath)),
+    );
+
+    for (const l of locales) {
+      const data = JSON.parse(
+        await readPathOrThrow(join(ressourcePath, root, l, outputFilePath)),
+      );
+
+      mergedData = Object.assign(mergedData, data);
+    }
+
+    cache = mergedData;
+
+    return mergedData;
+  } catch (e) {
+    throw new Error(`Error loading local ressource: ${e}`);
+  }
+}
+
 export default class I18nProvider {
   i18n: I18n;
   locale: string;
@@ -42,14 +75,14 @@ export default class I18nProvider {
     this.i18n = options?.data ?? cache;
     this.locale = locale;
     this.options = options;
-  }
 
-  public t(key: string, ...payload: (string | null | undefined)[]) {
     if (!this.i18n)
       throw new Error('Missing translation data. Use loadTranslations().');
 
     if (!this.i18n[this.locale]) this.locale = 'en';
+  }
 
+  public t(key: string, ...payload: (string | null | undefined)[]) {
     let variable =
       this.reduceKeyToVariable(key, this.locale) ??
       this.reduceKeyToVariable(key, this.options?.fallbackLanguage ?? 'en') ??
@@ -68,37 +101,6 @@ export default class I18nProvider {
       ...(options ?? {}),
     });
     return provider;
-  }
-
-  public async loadLocalRessource(
-    ressourcePath: string,
-    options?: I18nRessourceOptions,
-  ) {
-    const {
-      root = '/',
-      localesFilePath = 'locales.json',
-      outputFilePath = 'output.json',
-    } = options ?? {};
-
-    try {
-      let mergedData = {};
-
-      const locales: string[] = JSON.parse(
-        await readPathOrThrow(join(ressourcePath, root, localesFilePath)),
-      );
-
-      for (const l of locales) {
-        const data = JSON.parse(
-          await readPathOrThrow(join(ressourcePath, root, l, outputFilePath)),
-        );
-
-        mergedData = Object.assign(mergedData, data);
-      }
-
-      this.i18n = mergedData;
-    } catch (e) {
-      throw new Error(`Error loading local ressource: ${e}`);
-    }
   }
 
   private reduceKeyToVariable(key: string, locale = this.locale) {
