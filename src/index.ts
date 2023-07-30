@@ -92,6 +92,15 @@ export default class I18nProvider {
       variable = variable.split(`{${i}}`).join(payload[i] ?? '');
     }
 
+    if (this.options?.customReplace && this.options.customReplace.length) {
+      for (const { regex, replacer } of this.options.customReplace) {
+        const globalRegex = new RegExp(regex, 'g');
+        variable = variable.replace(globalRegex, (matchedString) =>
+          replacer(matchedString),
+        );
+      }
+    }
+
     return variable;
   }
 

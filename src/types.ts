@@ -19,4 +19,8 @@ export type GithubFetchOptions = {
 export type I18nProviderOptions = {
   data?: I18n;
   fallbackLanguage?: string;
+  customReplace?: {
+    regex: RegExp,
+    replacer: (matchedString: string) => string;
+  }[],
 };
