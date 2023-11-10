@@ -21,7 +21,7 @@
     "url": "git+https://github.com/larrrssss/i18n-translations-helper.git"
   },
   "devDependencies": {
-    "@types/node": "^20.4.2",
+    "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
@@ -38,6 +38,6 @@
   },
   "homepage": "https://github.com/larrrssss/i18n-translations-helper#readme",
   "dependencies": {
-    "axios": "^1.4.0"
+    "axios": "^1.6.1"
   }
 }
