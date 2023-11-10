@@ -82,14 +82,14 @@ export default class I18nProvider {
     if (!this.i18n[this.locale]) this.locale = 'en';
   }
 
-  public t(key: string, ...payload: (string | null | undefined)[]) {
+  public t(key: string, ...payload: (string | number | null | undefined)[]) {
     let variable =
       this.reduceKeyToVariable(key, this.locale) ??
       this.reduceKeyToVariable(key, this.options?.fallbackLanguage ?? 'en') ??
       key;
 
     for (let i = 0; i < payload.length; i += 1) {
-      variable = variable.split(`{${i}}`).join(payload[i] ?? '');
+      variable = variable.split(`{${i}}`).join(String(payload[i] ?? ''));
     }
 
     if (this.options?.customReplace && this.options.customReplace.length) {
